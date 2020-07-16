@@ -10,7 +10,7 @@ import pandas as pd
 from string import ascii_uppercase
 
 def latest_valid_airac(date_series, date):
-    date_mask = (date_series < date)
+    date_mask = (date_series <= date)
     return date_series[date_mask].max()
 
 # Read CSV file and extract only the AIRAC publication date
