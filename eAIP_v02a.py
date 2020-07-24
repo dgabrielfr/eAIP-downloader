@@ -15,6 +15,8 @@ def latest_valid_airac(date_series, date):
 
 # Read CSV file and extract only the AIRAC publication date
 # Caution to datetime type
+scriptpath = os.path.dirname(__file__)
+filename = os.path.join(scriptpath, "airac_date.txt")
 df = pd.read_csv("airac_date.txt", sep='\t', usecols=[4], header=None)
 date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
 
