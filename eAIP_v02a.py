@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Python (3) script from maintening eAIP information up-to date
+# Python (3) script from maintening French eAIP information up-to date
 # Version 0.2a
 # CHANGES
 # Read data from a CSV file
@@ -25,7 +25,7 @@ def compress_folder(name):
     shutil.make_archive(name, 'zip', name)
 
 # Read CSV file and extract only the AIRAC publication date
-# Caution to datetime type
+# Be careful of datetime type
 scriptpath = os.path.dirname(__file__)
 filename = os.path.join(scriptpath, "airac_date.txt")
 df = pd.read_csv("airac_date.txt", sep='\t', usecols=[4], header=None)
@@ -36,14 +36,11 @@ today = datetime.date.today()
 
 # Get current AIRAC date
 eAIP_date = latest_valid_airac_date(date_series, today)
-print("Current AIRAC date is:")
-print(eAIP_date)
+print("Current AIRAC date is: " + eAIP_date)
 
 # available airport list
 airport = []
 airport_in = []
-
-eAIP_date_string = str(eAIP_date.strftime("%d_%b_%Y")).upper()
 
 # Get current AIRAC name
 name_series = pd.read_csv("airac_date.txt", sep='\t', usecols=[1], header=None)
@@ -67,12 +64,9 @@ if os.path.exists("AIRAC " + str(eAIP_name[1] - 1)):
             shutil.rmtree("AIRAC " + str(eAIP_name[1] - 1))
         except OSError as e:
             print ("Error: %s - %s." % (e.filename, e.strerror))
-
-
 os.chdir("AIRAC " + AIRAC_folder)
 
 # check if airport.txt exist
-
 if (os.path.isfile("airport.txt")):
     with open("airport.txt") as file:
         for lines in file:
