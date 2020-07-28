@@ -5,13 +5,17 @@
 # Read data from a CSV fie
 # Should no return the current valid AIRAC instead of the nearest one in time (with may not have been released yet)
 
-import datetime, urllib.request, urllib.error, os.path
+import datetime, urllib.request, urllib.error, os.path, shutil, zipfile
 import pandas as pd
 from string import ascii_uppercase
 
-def latest_valid_airac(date_series, date):
+def latest_valid_airac_date(date_series, date):
     date_mask = (date_series <= date)
     return date_series[date_mask].max()
+
+def latest_valid_airac_name(date_series, name_series, date):
+    date_mask = (date_series <= date)
+    return name_series[date_mask].max()
 
 # Read CSV file and extract only the AIRAC publication date
 # Caution to datetime type
@@ -23,18 +27,33 @@ date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
 # today date
 today = datetime.date.today()
 
-eAIP_date = latest_valid_airac(date_series, today)
+# Get current AIRAC date
+eAIP_date = latest_valid_airac_date(date_series, today)
 print("Current AIRAC date is:")
 print(eAIP_date)
 
 # available airport list
-# TODO: load from external file if available
 airport = []
 airport_in = []
 
-# eAIP_date = datetime.date(2018, 3, 1)
 eAIP_date_string = str(eAIP_date.strftime("%d_%b_%Y")).upper()
-# print(eAIP_date_string)
+
+# Get current AIRAC name
+name_series = pd.read_csv("airac_date.txt", sep='\t', usecols=[1], header=None)
+eAIP_name = latest_valid_airac_name(date_series, name_series, today)
+
+# create folder with AIRAC name
+AIRAC_folder = str(eAIP_name[1])
+if not os.path.exists("AIRAC " + AIRAC_folder):
+    os.makedirs("AIRAC " + AIRAC_folder)
+else:
+    print("Folder already exist")
+    
+# if older folder exist => compress it
+if os.path.exists("AIRAC" + str(eAIP_name - 1)):
+    shutil.make_archive("AIRAC" + str(eAIP_name - 1) + ".zip", 'zip', "AIRAC" + str(eAIP_name - 1))
+
+os.chdir("AIRAC " + AIRAC_folder)
 
 # check if airport.txt exist
 
