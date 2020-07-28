@@ -2,8 +2,9 @@
 # Python (3) script from maintening eAIP information up-to date
 # Version 0.2a
 # CHANGES
-# Read data from a CSV fie
-# Should no return the current valid AIRAC instead of the nearest one in time (with may not have been released yet)
+# Read data from a CSV file
+# Should now return the current valid AIRAC instead of the nearest one in time (with may not have been released yet)
+# Save the previous AIRAC to a zip file
 
 import datetime, urllib.request, urllib.error, os.path, bz2, shutil
 import pandas as pd
