@@ -33,7 +33,9 @@ today = datetime.date.today()
 
 # Get current AIRAC date
 eAIP_date = latest_valid_airac_date(date_series, today)
-print("Current AIRAC date is: " + eAIP_date)
+eAIP_date_string = str(eAIP_date)
+print("Current AIRAC date is: " + eAIP_date_string)
+
 
 # Available airport list
 airport = []
