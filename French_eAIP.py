@@ -33,9 +33,8 @@ today = datetime.date.today()
 
 # Get current AIRAC date
 eAIP_date = latest_valid_airac_date(date_series, today)
-eAIP_date_string = str(eAIP_date)
+eAIP_date_string = str(eAIP_date.strftime("%d_%b_%Y")).upper()
 print("Current AIRAC date is: " + eAIP_date_string)
-
 
 # Available airport list
 airport = []
@@ -73,7 +72,6 @@ if (os.path.isfile("airport.txt")):
             airport_in.append(lines)
 
     for icao in airport_in:
-        print (icao)
         if not(os.path.isfile( icao + "-eAIP-" + eAIP_date_string + ".pdf")):
             urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date_string + "/FRANCE/AIRAC-" + str(eAIP_date) + "/pdf/FR-AD-2." + str(icao) + "-fr-FR.pdf",
                                    str(icao) + "-eAIP-" + eAIP_date_string + ".pdf")
@@ -84,7 +82,7 @@ else:
         for c2 in ascii_uppercase:
           try:
             urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date_string + "/FRANCE/AIRAC-" + str(eAIP_date) + "/pdf/FR-AD-2.LF" + c1 + c2 + "-fr-FR.pdf",
-                                         "LF" + c1 + c2 + "-eAIP-" + eAIP_date_string + ".pdf")
+                                        "LF" + c1 + c2 + "-eAIP-" + eAIP_date_string + ".pdf")
             airport.append("LF" + c1 + c2)
           except urllib.error.HTTPError as e:
               print("LF" + c1 +c2 + " not found")
