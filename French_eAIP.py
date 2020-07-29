@@ -19,9 +19,6 @@ def latest_valid_airac_name(date_series, name_series, date):
     return name_series[date_mask].max()
 
 def compress_folder(name):
-    # TODO: write function
-#    with bz2.open(name, 'wt') as f:
-#        f.write(text)
     shutil.make_archive(name, 'zip', name)
 
 # Read CSV file and extract only the AIRAC publication date
@@ -31,14 +28,14 @@ filename = os.path.join(scriptpath, "airac_date.txt")
 df = pd.read_csv("airac_date.txt", sep='\t', usecols=[4], header=None)
 date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
 
-# today date
+# Today date
 today = datetime.date.today()
 
 # Get current AIRAC date
 eAIP_date = latest_valid_airac_date(date_series, today)
 print("Current AIRAC date is: " + eAIP_date)
 
-# available airport list
+# Available airport list
 airport = []
 airport_in = []
 
@@ -46,14 +43,14 @@ airport_in = []
 name_series = pd.read_csv("airac_date.txt", sep='\t', usecols=[1], header=None)
 eAIP_name = latest_valid_airac_name(date_series, name_series, today)
 
-# create folder with AIRAC name
+# Create folder with AIRAC name
 AIRAC_folder = str(eAIP_name[1])
 if not os.path.exists("AIRAC " + AIRAC_folder):
     os.makedirs("AIRAC " + AIRAC_folder)
 else:
     print("Folder " +  AIRAC_folder + " already exist!")
     
-# if older folder exist => compress it
+# If older folder exist => compress it
 if os.path.exists("AIRAC " + str(eAIP_name[1] - 1)):
     print("Existing folder: " + "AIRAC " + str(eAIP_name[1] - 1))
     compress_folder("AIRAC " + str(eAIP_name[1] - 1))
@@ -66,7 +63,7 @@ if os.path.exists("AIRAC " + str(eAIP_name[1] - 1)):
             print ("Error: %s - %s." % (e.filename, e.strerror))
 os.chdir("AIRAC " + AIRAC_folder)
 
-# check if airport.txt exist
+# Check if airport.txt exist
 if (os.path.isfile("airport.txt")):
     with open("airport.txt") as file:
         for lines in file:
@@ -79,7 +76,7 @@ if (os.path.isfile("airport.txt")):
             urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date_string + "/FRANCE/AIRAC-" + str(eAIP_date) + "/pdf/FR-AD-2." + str(icao) + "-fr-FR.pdf",
                                    str(icao) + "-eAIP-" + eAIP_date_string + ".pdf")
 
-# if airport.txt not available => download and build airport.txt
+# If airport.txt not available => download and build airport.txt
 else:
     for c1 in ascii_uppercase:
         for c2 in ascii_uppercase:
