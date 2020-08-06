@@ -29,7 +29,7 @@ def compress_folder(name):
 # Be careful of datetime type
 scriptpath = os.path.dirname(__file__)
 filename = os.path.join(scriptpath, "airac_date.txt")
-df = pd.read_csv("airac_date.txt", sep='\t', usecols=[4], header=None)
+df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
 date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
 
 # Today date
@@ -45,7 +45,7 @@ airport = []
 airport_in = []
 
 # Get current AIRAC name
-name_series = pd.read_csv("airac_date.txt", sep='\t', usecols=[1], header=None)
+name_series = pd.read_csv(filename, sep='\t', usecols=[1], header=None)
 eAIP_name = latest_valid_airac_name(date_series, name_series, today)
 
 # Create folder with AIRAC name
