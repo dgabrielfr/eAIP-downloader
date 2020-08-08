@@ -50,8 +50,9 @@ def create_folder(folder):
 def compress_folder(folder):
     if os.path.isdir(folder):
         num_part = re.search("[0-9]{4}", folder)
-        shutil.make_archive("AIRAC " + str(int(num_part.group())-1), 'zip', "AIRAC " + str(int(num_part.group())-1))
-    if os.path.isfile("AIRAC " + str(int(num_part.group())-1) + ".zip"):
+        if os.path.isdir("AIRAC " + str(int(num_part.group())-1)):
+            shutil.make_archive("AIRAC " + str(int(num_part.group())-1), 'zip', "AIRAC " + str(int(num_part.group())-1))
+    if os.path.isfile("AIRAC " + str(int(num_part.group())-1) + ".zip" and os.path.isdir("AIRAC " + str(int(num_part.group())-1))):
         shutil.rmtree("AIRAC " + str(int(num_part.group())-1))
         print("Folder: AIRAC " + str(int(num_part.group())-1) + " deleted!")
 
@@ -62,6 +63,10 @@ def fixed_french_metro_download_url(filename):
 
 # Download the Metropolitan French eAIP charts in PDF format
 def download_french_metro_charts(fixed_path, folder):
+
+    num_part = re.search("[0-9]{4}", folder)
+    string_airac_date = num_part.group()
+
     # Create the folder
     create_folder(folder)
     compress_folder(folder)
@@ -74,7 +79,7 @@ def download_french_metro_charts(fixed_path, folder):
         for c2 in ascii_uppercase:
             full_path = fixed_path + c1 + c2 + "-fr-FR.pdf"
             try:
-                urllib.request.urlretrieve(full_path, "LF" + c1 + c2 + "-eAIP-" + "test" + ".pdf")
+                urllib.request.urlretrieve(full_path, "LF" + c1 + c2 + "-eAIP-" + string_airac_date + ".pdf")
             except urllib.error.HTTPError as e:
                 print("LF" + c1 + c2 + " download error: " + str(e))
 
