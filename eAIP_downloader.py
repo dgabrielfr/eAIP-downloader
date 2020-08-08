@@ -23,4 +23,8 @@ filename = os.path.join(scriptpath, "airac_date.txt")
 eAIP_name_string = utm.latest_valid_AIRAC_name(filename)
 eAIP_date_string = utm.latest_valid_AIRAC_date(filename)
 
-utm.download_french_metro_charts("AIRAC " + eAIP_name_string)
+# Download folder
+# TODO: link to GUI!
+folder = os.path.join(scriptpath, "AIRAC " + eAIP_name_string)
+fixed_url_path = utm.fixed_french_metro_download_url(filename)
+utm.download_french_metro_charts(fixed_url_path)
