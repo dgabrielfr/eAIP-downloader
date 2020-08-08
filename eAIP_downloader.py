@@ -6,7 +6,7 @@
 # Should now return the current valid AIRAC instead of the nearest one in time (with may not have been released yet)
 # Save the previous AIRAC to a zip file
 # TODO: fix bug :
-#   when the airport.txt exists -> does not download the PDF files if missing
+#   When the airport.txt exists -> does not download the PDF files if missing
 #   So add a condition before writing the airport.txt file?
 #   The bug will not happens in normal use :)
 
@@ -28,3 +28,4 @@ eAIP_date_string = utm.latest_valid_AIRAC_date(filename)
 folder = os.path.join(scriptpath, "AIRAC " + eAIP_name_string)
 fixed_url_path = utm.fixed_french_metro_download_url(filename)
 utm.download_french_metro_charts(fixed_url_path, "AIRAC " + eAIP_name_string)
+# utm.download_french_reunion_charts("AIRAC " + eAIP_name_string)

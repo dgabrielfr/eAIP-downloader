@@ -78,8 +78,37 @@ def download_french_metro_charts(fixed_path, folder):
     for c1 in ascii_uppercase:
         for c2 in ascii_uppercase:
             full_path = fixed_path + c1 + c2 + "-fr-FR.pdf"
+            # Check if the PDF file exists
+            if os.path.isfile("LF" + c1 + c2 + "-eAIP-" + string_airac_date + ".pdf"):
+                print("LF" + c1 + c2 + "-eAIP-" + string_airac_date + ".pdf" + " Already exists, skipping!")
+                continue
             try:
                 urllib.request.urlretrieve(full_path, "LF" + c1 + c2 + "-eAIP-" + string_airac_date + ".pdf")
             except urllib.error.HTTPError as e:
                 print("LF" + c1 + c2 + " download error: " + str(e))
 
+# Download the Reunion French eAIP charts in PDF format
+# TODO: not working yet!!!
+def download_french_reunion_charts(folder):
+    num_part = re.search("[0-9]{4}", folder)
+    string_airac_date = num_part.group()
+
+    # Create the folder
+    create_folder(folder)
+    compress_folder(folder)
+
+    # Change directory to the folder
+    os.chdir(folder)
+
+    reunion_airport = ["FMCZ", "FMEE", "FMEP"]
+    for ad in reunion_airport:
+        if os.path.isfile(ad + "-eAIP-" + string_airac_date + ".pdf"):
+            print(ad + "-eAIP-" + string_airac_date + ".pdf" + " Already exists, skipping!")
+            continue
+        try:
+           #URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
+            eAIP_date = "16_JUL_2020"
+            eAIP_date_formated = "2020-07-16"
+            urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date + "/RUN/AIRAC-" + eAIP_date_formated + "/pdf/FR-AD-2." + ad + "-fr-FR.pdf")
+        except urllib.error.HTTPError as e:
+            print(ad + " download error: " + str(e))
