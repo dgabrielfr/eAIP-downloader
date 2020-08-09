@@ -9,6 +9,7 @@ import shutil
 import os.path
 import re
 from string import ascii_uppercase
+from os import listdir
 
 # Return current AIRAC version as string
 def latest_valid_AIRAC_name(filename):
@@ -57,7 +58,7 @@ def compress_folder(folder):
         print("Folder: AIRAC " + str(int(num_part.group())-1) + " deleted!")
 
 # Return fixed part of French Metropolitan eAIP
-# Exemple url https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/FRANCE/AIRAC-2020-07-16/pdf/FR-AD-2.LFBA-fr-FR.pdf
+# URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/FRANCE/AIRAC-2020-07-16/pdf/FR-AD-2.LFBA-fr-FR.pdf
 def fixed_french_metro_download_url(filename):
     return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + latest_valid_AIRAC_date_formated(filename) + "/FRANCE/AIRAC-" + latest_valid_AIRAC_date(filename) + "/pdf/FR-AD-2.LF")
 
@@ -87,9 +88,14 @@ def download_french_metro_charts(fixed_path, folder):
             except urllib.error.HTTPError as e:
                 print("LF" + c1 + c2 + " download error: " + str(e))
 
+
+# Return fixed part of French Réunion eAIP
+# URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
+def fixed_french_reunion_download_url(filename):
+    return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + latest_valid_AIRAC_date_formated(filename) + "/RUN/AIRAC-" + latest_valid_AIRAC_date(filename) + "/pdf/FR-AD-2.")
+
 # Download the Reunion French eAIP charts in PDF format
-# TODO: not working yet!!!
-def download_french_reunion_charts(folder):
+def download_french_reunion_charts(fixed_path, folder):
     num_part = re.search("[0-9]{4}", folder)
     string_airac_date = num_part.group()
 
@@ -98,17 +104,30 @@ def download_french_reunion_charts(folder):
     compress_folder(folder)
 
     # Change directory to the folder
-    os.chdir(folder)
+    # os.chdir(folder)
 
+    # Réunion airport list
     reunion_airport = ["FMCZ", "FMEE", "FMEP"]
     for ad in reunion_airport:
         if os.path.isfile(ad + "-eAIP-" + string_airac_date + ".pdf"):
             print(ad + "-eAIP-" + string_airac_date + ".pdf" + " Already exists, skipping!")
             continue
         try:
-           #URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
-            eAIP_date = "16_JUL_2020"
-            eAIP_date_formated = "2020-07-16"
-            urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date + "/RUN/AIRAC-" + eAIP_date_formated + "/pdf/FR-AD-2." + ad + "-fr-FR.pdf")
+           # TODO: replace string with correct value from function :)
+            full_path = fixed_path + ad + "-fr-FR.pdf"
+            urllib.request.urlretrieve(full_path, ad + "-eAIP-" + string_airac_date + ".pdf")
         except urllib.error.HTTPError as e:
             print(ad + " download error: " + str(e))
+
+# Write airport.txt
+def write_airport_file(folder):
+    if os.path.isdir(folder):
+        print("Folder " + folder + " found!")
+    else:
+        print("Error! Folder " + folder + " NOT found")
+        return(-1)
+    
+    airport_file = open("airport.txt", "w")
+    files = [f for f in listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+    # TODO: Write correct REGEX expression
+    print(fies)
