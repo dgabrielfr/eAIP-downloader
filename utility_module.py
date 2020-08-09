@@ -129,5 +129,8 @@ def write_airport_file(folder):
     
     airport_file = open("airport.txt", "w")
     files = [f for f in listdir(folder) if os.path.isfile(os.path.join(folder, f))]
-    # TODO: Write correct REGEX expression
-    print(fies)
+    airport_name = set([file_name[:4] for file_name in files])
+    for airport in airport_name:
+        airport_file.write(airport + "\n")
+    airport_file.close()
+    
