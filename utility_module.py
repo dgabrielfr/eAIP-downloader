@@ -99,7 +99,7 @@ def download_french_reunion_charts(fixed_path, folder):
     num_part = re.search("[0-9]{4}", folder)
     string_airac_date = num_part.group()
 
-    # Create the folder
+    # Create the folder and compress the old one, if it exists
     create_folder(folder)
     compress_folder(folder)
 
@@ -131,6 +131,38 @@ def write_airport_file(folder):
     files = [f for f in listdir(folder) if os.path.isfile(os.path.join(folder, f))]
     airport_name = set([file_name[:4] for file_name in files])
     for airport in airport_name:
-        airport_file.write(airport + "\n")
+        airport_file.append(airport)
     airport_file.close()
     
+# Read airport.txt
+def read_airport_file(folder):
+    print(os.path.join(folder, "airport.txt"))
+    if os.path.isfile(os.path.join(folder, "airport.txt")):
+        print("File airport.txt found!")
+        os.chdir(folder)
+        airport_in =[]
+        with open("airport.txt") as file:
+            for lines in file:
+                lines = lines.strip() # Don't forget!!
+                airport_in.append(lines)
+        return(airport_in)
+    else:
+        print("File airport.txt not found!")
+        return(-1)
+
+# Download only the airport in airport.txt
+# Not yet working => do not use!!
+def download_airport_in_file(folder, airport_in, filename):
+
+    eAIP_date_string = latest_valid_AIRAC_date_formated(filename)
+    num_part = re.search("[0-9]{4}", folder)
+    string_airac_date = latest_valid_AIRAC_date(filename)
+
+    for icao in airport_in:
+        if not(os.path.isfile( icao + "-eAIP-" + eAIP_date_string + ".pdf")):
+            try:
+                urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date_string + "/FRANCE/AIRAC-" + string_airac_date + "/pdf/FR-AD-2." + str(icao) + "-fr-FR.pdf", str(icao) + "-eAIP-" + eAIP_date_string + ".pdf")
+            except urllib.error.HTTPError as e:
+                print(icao + " download error: " + str(e))
+        else:
+            print(icao + "-eAIP-" + eAIP_date_string + ".pdf" + " file already exists, skipping!")
