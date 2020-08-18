@@ -127,9 +127,10 @@ def write_airport_file(folder):
         print("Error! Folder " + folder + " NOT found")
         return(-1)
     
-    airport_file = open("airport.txt", "w")
+    airport_file = open("airport.txt", "wt")
     files = [f for f in listdir(folder) if os.path.isfile(os.path.join(folder, f))]
     airport_name = set([file_name[:4] for file_name in files])
+    print(airport_name)
     for airport in airport_name:
         airport_file.append(airport)
     airport_file.close()
@@ -151,7 +152,6 @@ def read_airport_file(folder):
         return(-1)
 
 # Download only the airport in airport.txt
-# Not yet working => do not use!!
 def download_airport_in_file(folder, airport_in, filename):
 
     eAIP_date_string = latest_valid_AIRAC_date_formated(filename)
