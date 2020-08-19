@@ -13,6 +13,8 @@ from os import listdir
 
 # Return current AIRAC version as string
 def latest_valid_AIRAC_name(filename):
+    if filename == "":
+        return(-1)
     today = datetime.date.today()
     name_series = pd.read_csv(filename, sep='\t', usecols=[1], header=None)
     df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
@@ -33,6 +35,8 @@ def latest_valid_AIRAC_date_formated(filename):
 
 # Return current AIRAC date as string 
 def latest_valid_AIRAC_date(filename):
+    if filename == "":
+        return(-1)
     today = datetime.date.today()
     df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
     date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date

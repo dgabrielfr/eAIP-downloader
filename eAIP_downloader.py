@@ -52,8 +52,10 @@ inp_browser_folder.setvar(filename)
 btn_download = Button(window, text="Download", command=lambda: utm.download_french_metro_charts(fixed_path, folder))
 btn_download.grid(row = 3, column = 2, padx=5, pady=5)
 
+window.mainloop()
+
 # Download, create and compress folder
-folder = inp_browser_folder.get()
+# folder = inp_browser_folder.get()
 print(folder)
 airport_in = utm.read_airport_file(folder)
 if airport_in != -1:
@@ -66,4 +68,3 @@ fixed_url_path = utm.fixed_french_reunion_download_url(filename)
 utm.download_french_reunion_charts(fixed_url_path, "AIRAC " + eAIP_name_string)
 utm.write_airport_file(folder)
 
-window.mainloop()
