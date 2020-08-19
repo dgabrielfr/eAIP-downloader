@@ -44,8 +44,14 @@ def latest_valid_AIRAC_date(filename):
     eAIP_date = str(date_series[date_mask].max())
     return(eAIP_date)
 
-# Create the folder if it does not exists yet
 def create_folder(folder):
+    """
+    Create the folder if it does not exists yet
+
+    Args:
+        folder (string): path to folder to create
+
+    """
     if not os.path.exists(folder):
         os.makedirs(folder)
     else:
@@ -69,8 +75,13 @@ def fixed_french_metro_download_url(filename):
 # Download the Metropolitan French eAIP charts in PDF format
 def download_french_metro_charts(fixed_path, folder):
 
+    print("Using folder name: ", folder)
+
     num_part = re.search("[0-9]{4}", folder)
-    string_airac_date = num_part.group()
+    try:
+        string_airac_date = num_part.group()
+    except AttributeError:
+        print("No digit found in folder name!")
 
     # Create the folder
     create_folder(folder)

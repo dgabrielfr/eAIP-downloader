@@ -8,7 +8,8 @@ from tkinter import *
 from tkinter.filedialog import *
 
 def browse_file(filename):
-    filename = askopenfilename(title="Open airport.txt file", filetypes=[('text file', '.txt'), ('all files', '.*')])
+    filename = askopenfilename(title="Open airport.txt file", 
+                               filetypes=[('text file', '.txt'), ('all files', '.*')])
     inp_browser.insert(0, filename)
 
 def browse_folder(folder):
@@ -23,12 +24,15 @@ window.title = "GUI prototype"
 
 file_path = StringVar()
 folder_path = StringVar()
+fixed_url_path = StringVar()
 
 # File Browser
 label_browser = Label(window, text="Press the button to browse to airport file:")
 label_browser.grid(row = 1, column = 1, padx=5, pady=5)
+
 # Need to use a lambda so as not to launch the function
-btn_browser = Button(window, text="Browse to file:", command=lambda: browse_file(filename))
+btn_browser = Button(window, text="Browse to file:", 
+                     command=lambda: browse_file(filename))
 btn_browser.grid(row = 1, column=2, padx=5, pady=5)
 inp_browser = Entry(window)
 inp_browser.grid(row = 1, column = 3, padx=5, pady=5)
@@ -41,6 +45,7 @@ eAIP_date_string = utm.latest_valid_AIRAC_date(filename)
 # Folder browser
 label_folder_browser = Label(window, text="Press the button to browse to the download folder")
 label_folder_browser.grid(row = 2, column = 1, padx=5, pady=5)
+
 # Need to use a lambda so as not to launch the function
 btn_folder_browser = Button(window, text="Browse to folder:", command=lambda: browse_folder(folder))
 btn_folder_browser.grid(row = 2, column = 2, padx=5, pady=5)
@@ -48,8 +53,22 @@ inp_browser_folder = Entry(window)
 inp_browser_folder.grid(row = 2, column = 3, padx=5, pady=5)
 inp_browser_folder.setvar(filename)
 
+
+def aux_func(fixed_url_path, folder):
+    msg = "Calling aux_func with args: "
+    print(msg, fixed_url_path, folder)
+
+    print("Filename: ", filename)
+
+    utm.download_french_metro_charts(fixed_url_path, folder)
+
+
 # Download button
-btn_download = Button(window, text="Download", command=lambda: utm.download_french_metro_charts(fixed_path, folder))
+btn_download = Button(window, text="Download", 
+                      command=lambda: aux_func(fixed_url_path, folder))
+
+
+
 btn_download.grid(row = 3, column = 2, padx=5, pady=5)
 
 window.mainloop()
