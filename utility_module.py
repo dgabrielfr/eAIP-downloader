@@ -21,11 +21,11 @@ def latest_valid_AIRAC_name(path_to_airac_date):
     Returns:
         string: The latest AIRAC name with 4 digits (ex: 2009)
     """
-    if filename == "":
+    if path_to_airac_date == "":
         return(-1)
     today = datetime.date.today()
-    name_series = pd.read_csv(filename, sep='\t', usecols=[1], header=None)
-    df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
+    name_series = pd.read_csv(path_to_airac_date, sep='\t', usecols=[1], header=None)
+    df = pd.read_csv(path_to_airac_date, sep='\t', usecols=[4], header=None)
     date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
     date_mask = (date_series <= today)
     eAIP_name = name_series[date_mask].max()
@@ -42,7 +42,7 @@ def latest_valid_AIRAC_date_formated(path_to_airac_date):
         string: The latest AIRAC date in the "%d_%b_%Y" format (ex: 13 AUG 20)
     """
     today = datetime.date.today()
-    df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
+    df = pd.read_csv(path_to_airac_date, sep='\t', usecols=[4], header=None)
     date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
     date_mask = (date_series <= today)
     eAIP_date = date_series[date_mask].max()
