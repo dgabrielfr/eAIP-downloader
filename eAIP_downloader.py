@@ -70,6 +70,7 @@ btn_download = Button(window, text="Download",
 
 btn_download.config(state="disabled")
 btn_download.grid(row = 3, column = 2, padx=5, pady=5, columnspan=2, sticky=W+E)
+# window.bind("<Return>", utm.download_french_metro_charts(folder))
 
 window.mainloop()
 

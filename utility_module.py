@@ -11,8 +11,16 @@ import re
 from string import ascii_uppercase
 from os import listdir
 
-# Return current AIRAC version as string
-def latest_valid_AIRAC_name(filename):
+def latest_valid_AIRAC_name(path_to_airac_date):
+    """
+    Return the latest AIRAC name (ex: 2009) as string
+
+    Args:
+        path_to_airac_date (string): The path to the airac_date.txt file
+
+    Returns:
+        string: The latest AIRAC name with 4 digits (ex: 2009)
+    """
     if filename == "":
         return(-1)
     today = datetime.date.today()
@@ -23,8 +31,16 @@ def latest_valid_AIRAC_name(filename):
     eAIP_name = name_series[date_mask].max()
     return(str(eAIP_name[1]))
 
-# Return current AIRAC date as string 
-def latest_valid_AIRAC_date_formated(filename):
+def latest_valid_AIRAC_date_formated(path_to_airac_date):
+    """
+    Return the latest AIRAC date (ex: 13 AUG 20) as string
+
+    Args:
+        path_to_airac_date (string): The path to the airac_date.txt
+
+    Returns:
+        string: The latest AIRAC date in the "%d_%b_%Y" format (ex: 13 AUG 20)
+    """
     today = datetime.date.today()
     df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
     date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
@@ -63,7 +79,7 @@ def compress_folder(folder):
     Compress preceding AIRAC (n-1) folder to zip archive then delete it
 
     Args:
-        folder (string): path to a folder with a numerical part for the AIRAC designation (ex: 2009)
+        folder (string): path to a folder with a numerical part for the AIRAC designation (ex: AIRAC 2009)
 
     """
     if os.path.isdir(folder):
