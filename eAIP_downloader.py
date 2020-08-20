@@ -68,8 +68,8 @@ btn_download = Button(window, text="Download",
                       command=lambda: aux_func(fixed_url_path, folder))
 
 
-
-btn_download.grid(row = 3, column = 2, padx=5, pady=5)
+btn_download.config(state="disabled")
+btn_download.grid(row = 3, column = 2, padx=5, pady=5, columnspan=2, sticky=W+E)
 
 window.mainloop()
 

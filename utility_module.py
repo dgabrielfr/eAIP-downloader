@@ -57,8 +57,15 @@ def create_folder(folder):
     else:
         print(folder + " already exists")
 
-# Compress folder if it exists (/!\ folder name - 1 /!\)
+
 def compress_folder(folder):
+    """
+    Compress preceding AIRAC (n-1) folder to zip archive then delete it
+
+    Args:
+        folder (string): path to a folder with a numerical part for the AIRAC designation (ex: 2009)
+
+    """
     if os.path.isdir(folder):
         num_part = re.search("[0-9]{4}", folder)
         if os.path.isdir("AIRAC " + str(int(num_part.group())-1)):
