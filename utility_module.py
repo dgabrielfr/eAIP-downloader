@@ -42,12 +42,16 @@ def latest_valid_AIRAC_date_formated(path_to_airac_date):
         string: The latest AIRAC date in the "%d_%b_%Y" format (ex: 13 AUG 20)
     """
     today = datetime.date.today()
-    df = pd.read_csv(path_to_airac_date, sep='\t', usecols=[4], header=None)
-    date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
-    date_mask = (date_series <= today)
-    eAIP_date = date_series[date_mask].max()
-    eAIP_date_string = str(eAIP_date.strftime("%d_%b_%Y")).upper()
-    return(eAIP_date_string)
+    if (path_to_airac_date != ""):
+        df = pd.read_csv(path_to_airac_date, sep='\t', usecols=[4], header=None)
+        date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
+        date_mask = (date_series <= today)
+        eAIP_date = date_series[date_mask].max()
+        eAIP_date_string = str(eAIP_date.strftime("%d_%b_%Y")).upper()
+        return(eAIP_date_string)
+    else:
+        print("Error, string should not be void!")
+        return("")
 
 # Return current AIRAC date as string 
 def latest_valid_AIRAC_date(filename):
@@ -93,7 +97,7 @@ def compress_folder(folder):
 # Return fixed part of French Metropolitan eAIP
 # URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/FRANCE/AIRAC-2020-07-16/pdf/FR-AD-2.LFBA-fr-FR.pdf
 def fixed_french_metro_download_url(filename):
-    return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + latest_valid_AIRAC_date_formated(filename) + "/FRANCE/AIRAC-" + latest_valid_AIRAC_date(filename) + "/pdf/FR-AD-2.LF")
+    return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/FRANCE/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.LF")
 
 # Download the Metropolitan French eAIP charts in PDF format
 def download_french_metro_charts(fixed_path, folder):
