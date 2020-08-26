@@ -20,7 +20,7 @@ def browse_folder(folder):
     folder = askdirectory(title="Open folder")
     inp_browser_folder.insert(0, folder)
     activate_download_btn()
-    # print(folder) # OK
+    folder_path_SV.set(folder)
 
 def show_airac():
     AIRAC_version_SV.set("Current AIRAC version is: " + utm.latest_valid_AIRAC_name(path_to_airac_date_SV.get()))
@@ -49,7 +49,7 @@ path_to_airac_date = getpath()
 path_to_download = getDLpath()
 
 # File Browser
-label_browser = Label(window, text="Press the button to browse to airac_date file:")
+label_browser = Label(window, text="Press the button to browse to airac_date file:", width=40)
 label_browser.grid(row = 1, column = 1, padx=5, pady=5)
 
 # Need to use a lambda so as not to launch the function
@@ -65,7 +65,7 @@ eAIP_name_string = utm.latest_valid_AIRAC_name(path_to_airac_date)
 eAIP_date_string = utm.latest_valid_AIRAC_date(path_to_airac_date)
 
 # Folder browser
-label_folder_browser = Label(window, text="Press the button to browse to the download folder")
+label_folder_browser = Label(window, text="Press the button to browse to the download folder", width=40)
 label_folder_browser.grid(row = 2, column = 1, padx=5, pady=5)
 
 # Need to use a lambda so as not to launch the function
@@ -107,5 +107,3 @@ else:
 """
 
 window.mainloop()
-
-# Download, create and compress folder
