@@ -94,13 +94,30 @@ def compress_folder(folder):
         shutil.rmtree("AIRAC " + str(int(num_part.group())-1))
         print("Folder: AIRAC " + str(int(num_part.group())-1) + " deleted!")
 
-# Return fixed part of French Metropolitan eAIP
-# URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/FRANCE/AIRAC-2020-07-16/pdf/FR-AD-2.LFBA-fr-FR.pdf
 def fixed_french_metro_download_url(filename):
+    """
+    Return the fixed part of the French Metropolitan eAIP url download
+    example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/FRANCE/AIRAC-2020-07-16/pdf/FR-AD-2.LFBA-fr-FR.pdf
+
+    Args:
+        filename (string): the path to the airac_date.txt file
+
+    Return:
+          String: fixed part of the French Metropolitan eAIP url download 
+
+    """
     return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/FRANCE/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.LF")
 
-# Download the Metropolitan French eAIP charts in PDF format
 def download_french_metro_charts(fixed_path, folder):
+    """
+    1/ Create a folder (if not existing) with a 4 digits corresponding to the version number
+    2/ Compress the previous (n-1) folder, if it exists
+    3/ Download the French Metropolitan charts in PDF form
+
+    Args:
+        fixed_path (string): the fixed part of the download path
+        folder (string): the folder to download the files in
+    """
 
     print("Using folder name: ", folder)
 
@@ -131,13 +148,31 @@ def download_french_metro_charts(fixed_path, folder):
                 print("LF" + c1 + c2 + " download error: " + str(e))
 
 
-# Return fixed part of French Réunion eAIP
-# URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
+ 
 def fixed_french_reunion_download_url(filename):
+    """
+    Return the fixed part of the French Réunion eAIP url download
+    example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
+
+    Args:
+        filename (string): the path to the airac_date.txt file
+
+    Return:
+          String: fixed part of the French Réunion eAIP url download 
+
+    """
     return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + latest_valid_AIRAC_date_formated(filename) + "/RUN/AIRAC-" + latest_valid_AIRAC_date(filename) + "/pdf/FR-AD-2.")
 
-# Download the Reunion French eAIP charts in PDF format
 def download_french_reunion_charts(fixed_path, folder):
+    """
+    1/ Create a folder (if not existing) with a 4 digits corresponding to the version number
+    2/ Compress the previous (n-1) folder, if it exists
+    3/ Download the French Réunion charts in PDF form
+
+    Args:
+        fixed_path (string): the fixed part of the download path
+        folder (string): the folder to download the files in
+    """
     num_part = re.search("[0-9]{4}", folder)
     string_airac_date = num_part.group()
 
