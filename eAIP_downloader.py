@@ -1,109 +1,135 @@
-# -*- coding: utf-8 -*-
-
-import datetime, urllib.request, urllib.error, os.path, bz2, shutil
 import pandas as pd
-import utility_module as utm
-import os
-from tkinter import *
+import tkinter as tk
+import datetime
+import urllib
+import urllib.request
+import shutil
+import os.path
+import re
+from string import ascii_uppercase
+from os import listdir
+
 from tkinter.filedialog import *
 
-def browse_file(filename):
-    filename = askopenfilename(title="Open airport.txt file", 
+
+def update(filename):
+    path_to_AIRAC.set(filename)
+    print("Current path to AIRAC is : " + path_to_AIRAC.get())
+    print(latest_valid_AIRAC_name(filename))
+    print(latest_valid_AIRAC_date_formated(filename))
+    # download(filename)
+
+def openBrowser():
+    filename = askopenfilename(title="Open airac.txt file", 
                                filetypes=[('text file', '.txt'), ('all files', '.*')])
-    inp_browser.insert(0, filename)
-    path_to_airac_date = getpath()
-    activate_download_btn()
-    show_airac()
+    if filename != "":
+        update(filename)
+        btn_download.config(state = "normal")
 
+def latest_valid_AIRAC_name(path_to_airac_date):
+    """
+    Return the latest AIRAC name (ex: 2009) as string
 
-def browse_folder(folder):
-    folder = askdirectory(title="Open folder")
-    inp_browser_folder.insert(0, folder)
-    activate_download_btn()
-    folder_path_SV.set(folder)
+    Args:
+        path_to_airac_date (string): The path to the airac_date.txt file
 
-def show_airac():
-    AIRAC_version_SV.set("Current AIRAC version is: " + utm.latest_valid_AIRAC_name(path_to_airac_date_SV.get()))
-    # Alternative (2020-08-13)
-    # AIRAC_date_SV.set("Current AIRAC date is: " +  utm.latest_valid_AIRAC_date(path_to_airac_date_SV.get()))
-    AIRAC_date_SV.set("Current AIRAC date is: " +  utm.latest_valid_AIRAC_date_formated(path_to_airac_date_SV.get()))
+    Returns:
+        string: The latest AIRAC name with 4 digits (ex: 2009)
+    """
+    if path_to_airac_date == "":
+        return(-1)
+    today = datetime.date.today()
+    name_series = pd.read_csv(path_to_airac_date, sep='\t', usecols=[1], header=None)
+    df = pd.read_csv(path_to_airac_date, sep='\t', usecols=[4], header=None)
+    date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
+    date_mask = (date_series <= today)
+    eAIP_name = name_series[date_mask].max()
+    return(str(eAIP_name[1]))
+
+def latest_valid_AIRAC_date_formated(path_to_airac_date):
+    """
+    Return the latest AIRAC date (ex: 13 AUG 20) as string
+
+    Args:
+        path_to_airac_date (string): The path to the airac_date.txt
+
+    Returns:
+        string: The latest AIRAC date in the "%d_%b_%Y" format (ex: 13 AUG 20)
+    """
+    today = datetime.date.today()
+    if (path_to_airac_date != ""):
+        df = pd.read_csv(path_to_airac_date, sep='\t', usecols=[4], header=None)
+        date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
+        date_mask = (date_series <= today)
+        eAIP_date = date_series[date_mask].max()
+        eAIP_date_string = str(eAIP_date.strftime("%d_%b_%Y")).upper()
+        return(eAIP_date_string)
+    else:
+        print("Error, string should not be void!")
+        return("")
     
-def activate_download_btn():
-    btn_download.config(state="normal")
-
-def getpath():
-    return(path_to_airac_date_SV.get())
-
-def getDLpath():
-    return(folder_path_SV.get())
-
-window = Tk()
-window.title = "GUI prototype"
-
-path_to_airac_date_SV = StringVar()
-folder_path_SV = StringVar()
-AIRAC_version_SV = StringVar()
-AIRAC_date_SV = StringVar()
-
-path_to_airac_date = getpath()
-path_to_download = getDLpath()
-
-# File Browser
-label_browser = Label(window, text="Press the button to browse to airac_date file:", width=40)
-label_browser.grid(row = 1, column = 1, padx=5, pady=5)
-
-# Need to use a lambda so as not to launch the function
-btn_browser = Button(window, text="Browse to file:", 
-                     command=lambda: browse_file(path_to_airac_date))
-btn_browser.grid(row = 1, column=2, padx=5, pady=5)
-inp_browser = Entry(window, textvariable=path_to_airac_date_SV, width=50)
-inp_browser.grid(row = 1, column = 3, padx=5, pady=5)
+def latest_valid_AIRAC_date(filename):
+    if filename == "":
+        return(-1)
+    today = datetime.date.today()
+    df = pd.read_csv(filename, sep='\t', usecols=[4], header=None)
+    date_series = pd.to_datetime(df[4], format='%d %b %y').dt.date
+    date_mask = (date_series <= today)
+    eAIP_date = str(date_series[date_mask].max())
+    return(eAIP_date)   
 
 
-# Get AIRAC date and name as string
-eAIP_name_string = utm.latest_valid_AIRAC_name(path_to_airac_date)
-eAIP_date_string = utm.latest_valid_AIRAC_date(path_to_airac_date)
+def download(filename):
+    """
+    Return the fixed part of the French Metropolitan eAIP url download
+    example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/FRANCE/AIRAC-2020-07-16/pdf/FR-AD-2.LFBA-fr-FR.pdf
 
-# Folder browser
-label_folder_browser = Label(window, text="Press the button to browse to the download folder", width=40)
-label_folder_browser.grid(row = 2, column = 1, padx=5, pady=5)
+    Args:
+        filename (string): the path to the airac_date.txt file
 
-# Need to use a lambda so as not to launch the function
-btn_folder_browser = Button(window, text="Browse to folder:", command=lambda: browse_folder(path_to_download))
-btn_folder_browser.grid(row = 2, column = 2, padx=5, pady=5)
-inp_browser_folder = Entry(window, width=50)
-inp_browser_folder.grid(row = 2, column = 3, padx=5, pady=5)
-inp_browser_folder.setvar(path_to_airac_date)
+    Return:
+          String: fixed part of the French Metropolitan eAIP url download 
 
-label_airac = Label(window, textvariable=AIRAC_version_SV)
-label_airac.grid(row = 3, column=0, columnspan=2, padx=5, pady=5)
+    """
+    download_french_metro_charts(filename, "https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/FRANCE/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.LF")
 
-label_airac = Label(window, textvariable=AIRAC_date_SV)
-label_airac.grid(row = 4, column=0, columnspan=2, padx=5, pady=5)
+def download_french_metro_charts(filename, fixed_path):
+    """
+    1/ Create a folder (if not existing) with a 4 digits corresponding to the version number
+    2/ Compress the previous (n-1) folder, if it exists
+    3/ Download the French Metropolitan charts in PDF form
 
-# Download button
-fixed_url_path = utm.fixed_french_metro_download_url(getDLpath())
-btn_download = Button(window, text="Download", 
-                            command=lambda: utm.download_french_metro_charts(fixed_url_path, getDLpath()))
+    Args:
+        fixed_path (string): the fixed part of the download path
+        folder (string): the folder to download the files in
+    """
 
+    # Download the charts in PDF
+    for c1 in ascii_uppercase:
+        for c2 in ascii_uppercase:
+            full_path = fixed_path + c1 + c2 + "-fr-FR.pdf"
+            # Check if the PDF file exists
+            if os.path.isfile("LF" + c1 + c2 + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf"):
+                print("LF" + c1 + c2 + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf" + " Already exists, skipping!")
+                continue
+            try:
+                urllib.request.urlretrieve(full_path, "LF" + c1 + c2 + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf")
+            except urllib.error.HTTPError as e:
+                print("LF" + c1 + c2 + " download error: " + str(e))
 
+window = tk.Tk()
+window.title = "eAIP downloader GUI prototype"
+
+path_to_AIRAC = tk.StringVar()
+
+label_browser = tk.Label(window, text="Press the button to browse", width = 30)
+label_browser.grid(row = 1, column = 1, padx = 5, pady = 5)
+
+btn_browser = tk.Button(window, text = "Browse", width = 20, command = openBrowser)
+btn_browser.grid(row = 1, column = 2, padx = 5, pady = 5)
+
+btn_download = tk.Button(window, text="Download", width = 30, command = lambda: download(path_to_AIRAC.get()))
 btn_download.config(state="disabled")
-btn_download.grid(row = 3, column = 2, padx=5, pady=5, columnspan=2, rowspan=2, sticky=W+E)
-
-"""
-airport_in = utm.read_airport_file(folder_path_SV.get())
-if airport_in != -1:
-    utm.download_airport_in_file(folder_path_SV.get(), airport_in, path_to_airac_date)
-    os._exit(1)
-if path_to_airac_date_SV.get() != "":
-    fixed_url_path = utm.fixed_french_metro_download_url(path_to_airac_date)
-    utm.download_french_metro_charts(fixed_url_path, "AIRAC " + eAIP_name_string)
-
-    fixed_url_path = utm.fixed_french_reunion_download_url(path_to_airac_date)
-    utm.download_french_reunion_charts(fixed_url_path, "AIRAC " + eAIP_name_string)
-    utm.write_airport_file(folder_path_SV.get())
-else:
-    print("ERROR! path to file airac_date.txt is not correct!")
-"""
+btn_download.grid(row = 2, column = 2, padx = 5, pady = 5)
 
 window.mainloop()
