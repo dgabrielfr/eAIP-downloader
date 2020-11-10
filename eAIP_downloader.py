@@ -12,7 +12,18 @@ import re
 from string import ascii_uppercase
 from os import listdir
 
+import os
+
 from tkinter.filedialog import *
+
+def searchfile():
+    if os.path.isfile("airac_date.txt"):
+        update("airac_date.txt")
+        btn_browser.config(state = "disable")
+        btn_browser['text'] = "File found!"
+        btn_download.config(state = "normal")
+        btn_download.config(bg = "green")
+        btn_download.config(fg = "white")
 
 def update(filename):
     path_to_AIRAC.set(filename)
@@ -26,6 +37,7 @@ def openBrowser():
         update(filename)
         btn_download.config(state = "normal")
         btn_download.config(bg = "green")
+        btn_download.config(fg = "white")
 
 def latest_valid_AIRAC_name(path_to_airac_date):
     """
@@ -96,21 +108,18 @@ def download(filename):
 
 def download_french_metro_charts(filename, fixed_path):
     """
-    1/ Create a folder (if not existing) with a 4 digits corresponding to the version number
-    2/ Compress the previous (n-1) folder, if it exists
-    3/ Download the French Metropolitan charts in PDF form
+    1/ Download the French Metropolitan charts in PDF form
 
     Args:
+        filename (string): the path to the airac_date.txt
         fixed_path (string): the fixed part of the download path
-        folder (string): the folder to download the files in
     """
 
     # Download the charts in PDF
-    i = 0 
     for c1 in ascii_uppercase:
         for c2 in ascii_uppercase:
-            pgb_download["value"] = i + 1
-            window.update()
+            # pgb_download.step()
+            # window.update()
             full_path = fixed_path + c1 + c2 + "-fr-FR.pdf"
             # Check if the PDF file exists
             if os.path.isfile("LF" + c1 + c2 + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf"):
@@ -125,12 +134,13 @@ def dl(folder):
     print("The download folder is set to: " + folder)
 
 window = tk.Tk()
+window.geometry("500x200")
 window.title = "eAIP downloader GUI prototype"
 
 path_to_AIRAC = tk.StringVar()
 path_to_Folder = tk.StringVar()
 
-label_browser = tk.Label(window, text="Press the button to browse", width = 30)
+label_browser = tk.Label(window, text="Browse to AIRAC_date.txt: ", width = 30)
 label_browser.grid(row = 1, column = 1, padx = 5, pady = 5)
 
 btn_browser = tk.Button(window, text = "Browse", width = 30, command = openBrowser)
@@ -140,16 +150,19 @@ label_folder = tk.Label(window, text="Enter the folder path :", width = 30)
 label_folder.grid(row = 2, column = 1, padx = 5, pady = 5)
 ent_folder = tk.Entry(window, width = 30)
 ent_folder.grid(row = 2, column = 2, padx = 5, pady = 5)
-# pgb_download = ttk.Progressbar(window, length = 30, maximum = 676, cursor='spider', mode = "determinate", orient=tk.HORIZONTAL)
+# pgb_download = ttk.Progressbar(window, length = 200, maximum = 676, cursor='spider', mode = "determinate", orient=tk.HORIZONTAL)
 # pgb_download.grid(row = 3, column = 1, padx = 5, pady = 5) 
 btn_download = tk.Button(window, text="Download", width = 30, command = lambda: download(path_to_AIRAC.get()))
 btn_download.config(state="disabled")
 btn_download.grid(row = 3, column = 2, padx = 5, pady = 5)
 
-frame = tk.LabelFrame(window, text="Airac Information: ", padx=5, pady=5)
+frame = tk.LabelFrame(window, text="Airac Informations: ")
 frame.grid(row = 4, column = 0, columnspan=3, padx=5, pady = 5)
 label_AIRAC_name = tk.Label(frame)
 label_AIRAC_name.pack()
 label_AIRAC_date = tk.Label(frame)
 label_AIRAC_date.pack()
+
+searchfile()
+
 window.mainloop()
