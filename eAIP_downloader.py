@@ -13,6 +13,7 @@ from string import ascii_uppercase
 from os import listdir
 
 import os
+import sys
 
 from tkinter.filedialog import *
 
@@ -118,8 +119,8 @@ def download_french_metro_charts(filename, fixed_path):
     # Download the charts in PDF
     for c1 in ascii_uppercase:
         for c2 in ascii_uppercase:
-            # pgb_download.step()
-            # window.update()
+            pgb_download.step()
+            window.update()
             full_path = fixed_path + c1 + c2 + "-fr-FR.pdf"
             # Check if the PDF file exists
             if os.path.isfile("LF" + c1 + c2 + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf"):
@@ -131,7 +132,7 @@ def download_french_metro_charts(filename, fixed_path):
                 print("LF" + c1 + c2 + " download error: " + str(e))
 
 def dl(folder):
-    print("The download folder is set to: " + folder)
+    print("The download folder is set to: " + os.path.dirname(sys.argv[0])) # correct!
 
 window = tk.Tk()
 window.geometry("500x200")
@@ -150,8 +151,12 @@ label_folder = tk.Label(window, text="Enter the folder path :", width = 30)
 label_folder.grid(row = 2, column = 1, padx = 5, pady = 5)
 ent_folder = tk.Entry(window, width = 30)
 ent_folder.grid(row = 2, column = 2, padx = 5, pady = 5)
-# pgb_download = ttk.Progressbar(window, length = 200, maximum = 676, cursor='spider', mode = "determinate", orient=tk.HORIZONTAL)
-# pgb_download.grid(row = 3, column = 1, padx = 5, pady = 5) 
+
+# progress bar
+pgb_download = ttk.Progressbar(window, length = 200, maximum = 676, cursor='spider', mode = "determinate", orient=tk.HORIZONTAL)
+pgb_download.grid(row = 3, column = 1, padx = 5, pady = 5) 
+
+
 btn_download = tk.Button(window, text="Download", width = 30, command = lambda: download(path_to_AIRAC.get()))
 btn_download.config(state="disabled")
 btn_download.grid(row = 3, column = 2, padx = 5, pady = 5)
