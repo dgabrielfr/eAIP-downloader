@@ -134,6 +134,30 @@ def download_french_metro_charts(filename, fixed_path):
 def dl(folder):
     print("The download folder is set to: " + os.path.dirname(sys.argv[0])) # correct!
 
+#TODO: write the function!
+def backup_previous_airac(path_to_airac_date):
+    """
+    make an archive of the previous AIRAC version
+
+    Args:
+        
+
+    Return:
+          
+
+    """
+    current_AIRAC_name = latest_valid_AIRAC_name(path_to_airac_date)
+    previous_AIRAC_name = int(current_AIRAC_name) - 1
+    if (os.path.isdir(str(previous_AIRAC_name))):
+        # https://stackoverflow.com/questions/49284015/how-to-check-if-folder-is-empty-with-python
+        if (len(os.listdir(str(previous_AIRAC_name))) != 0):
+            print("Backup folder is not empty")
+        else:
+            print("Backup folder exists but is empty")
+    else:
+        print("Backup folder not found!")
+        #TODO: create folder and make the backup
+
 window = tk.Tk()
 window.geometry("500x200")
 window.title = "eAIP downloader GUI prototype"
@@ -169,5 +193,7 @@ label_AIRAC_date = tk.Label(frame)
 label_AIRAC_date.pack()
 
 searchfile()
+
+backup_previous_airac(path_to_AIRAC.get()) # ok
 
 window.mainloop()
