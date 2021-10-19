@@ -156,7 +156,27 @@ def backup_previous_airac(path_to_airac_date):
             print("Backup folder exists but is empty")
     else:
         print("Backup folder not found!")
-        #TODO: create folder and make the backup
+        os.mkdir(str(previous_AIRAC_name))
+        print("Created backup folder")
+        #TODO: search all previous airac files
+        files = os.listdir('.')
+        pattern = "^LF[A-Z]{2}-eAIP-" + str(previous_AIRAC_name)
+        r = re.compile(pattern)
+        old_AIRAC_files = list(filter(r.match, files))
+        print(old_AIRAC_files) #ok
+        # https://pynative.com/python-move-files/
+        source_folder = os.getcwd()
+        print(source_folder) #ok
+        destination_folder = str(previous_AIRAC_name)
+        for file in old_AIRAC_files:
+            source = source_folder  + "\\" + file
+            print(source)
+            destination = destination_folder + "\\" + file
+            print(destination)
+            shutil.move(source, destination)
+            
+
+            
 
 window = tk.Tk()
 window.geometry("500x200")
