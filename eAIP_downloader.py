@@ -172,11 +172,9 @@ def backup_previous_airac(path_to_airac_date):
             destination = destination_folder + "\\" + file
             shutil.move(source, destination)
         shutil.make_archive(str(previous_AIRAC_name), "zip", str(previous_AIRAC_name))
+    if (os.path.isfile(str(previous_AIRAC_name) + ".zip")):
+        shutil.rmtree(str(previous_AIRAC_name))
 
-        
-            
-
-            
 
 window = tk.Tk()
 window.geometry("500x200")
