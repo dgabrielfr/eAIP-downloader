@@ -171,6 +171,10 @@ def backup_previous_airac(path_to_airac_date):
     if (os.path.isfile(str(previous_AIRAC_name) + ".zip")):
         shutil.rmtree(str(previous_AIRAC_name))
 
+#TODO: 
+# From PDF like https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_07_OCT_2021/FRANCE/LF_Amdt_A_2021_11_AIP_en.pdf
+# Extract only the airports with changes
+# Maybe link to a SQL(lite) database?
 
 window = tk.Tk()
 window.geometry("500x200")
