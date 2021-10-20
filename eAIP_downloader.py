@@ -135,16 +135,12 @@ def download_french_metro_charts(filename, fixed_path):
 def dl(folder):
     print("The download folder is set to: " + os.path.dirname(sys.argv[0])) # correct!
 
-#TODO: write the function!
 def backup_previous_airac(path_to_airac_date):
     """
-    make an archive of the previous AIRAC version
+    Make an archive of the previous AIRAC version
 
     Args:
-        
-
-    Return:
-          
+        path_to_airac_date (string) : the path to the airac_date.txt
 
     """
     current_AIRAC_name = latest_valid_AIRAC_name(path_to_airac_date)
@@ -212,6 +208,6 @@ label_AIRAC_date.pack()
 
 searchfile()
 
-backup_previous_airac(path_to_AIRAC.get()) # ok
+backup_previous_airac(path_to_AIRAC.get())
 
 window.mainloop()
