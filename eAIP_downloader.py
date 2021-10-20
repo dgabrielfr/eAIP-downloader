@@ -9,6 +9,7 @@ import urllib.request
 import shutil
 import os.path
 import re
+import tarfile
 from string import ascii_uppercase
 from os import listdir
 
@@ -134,6 +135,43 @@ def download_french_metro_charts(filename, fixed_path):
 def dl(folder):
     print("The download folder is set to: " + os.path.dirname(sys.argv[0])) # correct!
 
+def backup_previous_airac(path_to_airac_date):
+    """
+    Make an archive of the previous AIRAC version
+
+    Args:
+        path_to_airac_date (string) : the path to the airac_date.txt
+
+    """
+    current_AIRAC_name = latest_valid_AIRAC_name(path_to_airac_date)
+    previous_AIRAC_name = int(current_AIRAC_name) - 1
+    if (os.path.isdir(str(previous_AIRAC_name))):
+        # https://stackoverflow.com/questions/49284015/how-to-check-if-folder-is-empty-with-python
+        if (len(os.listdir(str(previous_AIRAC_name))) != 0):
+            print("Backup folder is not empty")
+        else:
+            print("ERROR : Backup folder exists but is empty")
+    else:
+        print("Backup folder not found!")
+        os.mkdir(str(previous_AIRAC_name))
+        print("Created backup folder")
+        #TODO: search all previous airac files
+        files = os.listdir('.')
+        pattern = "^LF[A-Z]{2}-eAIP-" + str(previous_AIRAC_name)
+        r = re.compile(pattern)
+        old_AIRAC_files = list(filter(r.match, files))
+        # https://pynative.com/python-move-files/
+        source_folder = os.getcwd()
+        destination_folder = str(previous_AIRAC_name)
+        for file in old_AIRAC_files:
+            source = source_folder  + "\\" + file
+            destination = destination_folder + "\\" + file
+            shutil.move(source, destination)
+        shutil.make_archive(str(previous_AIRAC_name), "zip", str(previous_AIRAC_name))
+    if (os.path.isfile(str(previous_AIRAC_name) + ".zip")):
+        shutil.rmtree(str(previous_AIRAC_name))
+
+
 window = tk.Tk()
 window.geometry("500x200")
 window.title = "eAIP downloader GUI prototype"
@@ -169,5 +207,7 @@ label_AIRAC_date = tk.Label(frame)
 label_AIRAC_date.pack()
 
 searchfile()
+
+backup_previous_airac(path_to_AIRAC.get())
 
 window.mainloop()
