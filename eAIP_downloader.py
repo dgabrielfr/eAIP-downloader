@@ -1,22 +1,20 @@
-import tkinter as tk
-
-import pandas as pd
-import tkinter as tk
-from tkinter import ttk
 import datetime
-import urllib
-import urllib.request
-import shutil
+import os
 import os.path
 import re
-import tarfile
-from string import ascii_uppercase
-from os import listdir
-
-import os
+import shutil
 import sys
-
+import tkinter as tk
+import urllib
+import urllib.request
+from os import listdir
+from string import ascii_uppercase
+from tkinter import ttk
 from tkinter.filedialog import *
+
+import pandas as pd
+import psycopg2
+
 
 def searchfile():
     if os.path.isfile("airac_date.txt"):
@@ -137,10 +135,13 @@ def dl(folder):
 
 def backup_previous_airac(path_to_airac_date):
     """
-    Make an archive of the previous AIRAC version
+    make an archive of the previous AIRAC version
 
     Args:
-        path_to_airac_date (string) : the path to the airac_date.txt
+        
+
+    Return:
+          
 
     """
     current_AIRAC_name = latest_valid_AIRAC_name(path_to_airac_date)
@@ -150,31 +151,48 @@ def backup_previous_airac(path_to_airac_date):
         if (len(os.listdir(str(previous_AIRAC_name))) != 0):
             print("Backup folder is not empty")
         else:
-            print("ERROR : Backup folder exists but is empty")
+            print("Backup folder exists but is empty")
     else:
         print("Backup folder not found!")
+        #TODO: create folder and make the backup
         os.mkdir(str(previous_AIRAC_name))
         print("Created backup folder")
-        #TODO: search all previous airac files
-        files = os.listdir('.')
-        pattern = "^LF[A-Z]{2}-eAIP-" + str(previous_AIRAC_name)
-        r = re.compile(pattern)
-        old_AIRAC_files = list(filter(r.match, files))
-        # https://pynative.com/python-move-files/
-        source_folder = os.getcwd()
-        destination_folder = str(previous_AIRAC_name)
-        for file in old_AIRAC_files:
-            source = source_folder  + "\\" + file
-            destination = destination_folder + "\\" + file
-            shutil.move(source, destination)
-        shutil.make_archive(str(previous_AIRAC_name), "zip", str(previous_AIRAC_name))
-    if (os.path.isfile(str(previous_AIRAC_name) + ".zip")):
-        shutil.rmtree(str(previous_AIRAC_name))
+        #TODO: check if previous AIRAC PDF exists. If it is the case, move then to the backup folder
+        
+# TODO: 
+# Caution to set the correct database name
+# On Windows, default user is "postgres" with the "postgres" database
+def postgresql_connection():
 
-#TODO: 
-# From PDF like https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_07_OCT_2021/FRANCE/LF_Amdt_A_2021_11_AIP_en.pdf
-# Extract only the airports with changes
-# Maybe link to a SQL(lite) database?
+    conn = None
+    try: 
+        conn = psycopg2.connect(
+        host="localhost",
+        database="postgres",
+        user="postgres",
+        password="psql")
+        print('Connecting to PostgreSQL server')
+        cur = conn.cursor()
+        
+        print('PostgreSQL database version:')
+        cur.execute('SELECT version()')
+
+        # display the PostgreSQL database server version
+        db_version = cur.fetchone()
+        print(db_version)
+        
+        # close the communication with the PostgreSQL
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            print('Database connection closed.')
+
+
+postgresql_connection()
 
 window = tk.Tk()
 window.geometry("500x200")
@@ -209,6 +227,7 @@ label_AIRAC_name = tk.Label(frame)
 label_AIRAC_name.pack()
 label_AIRAC_date = tk.Label(frame)
 label_AIRAC_date.pack()
+
 
 searchfile()
 
