@@ -146,8 +146,7 @@ def download_french_reunion_charts(filename, fixed_path):
             continue
         try:
             full_path = fixed_path + ad + "-fr-FR.pdf"
-            print(full_path)
-            # urllib.request.urlretrieve(full_path, ad + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf")
+            urllib.request.urlretrieve(full_path, ad + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf")
         except urllib.error.HTTPError as e:
             print(ad + " download error: " + str(e))
 
