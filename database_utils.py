@@ -39,3 +39,6 @@ def postgresql_connection():
         if conn is not None:
             conn.close()
             print('Database connection closed.')
+
+# TODO:
+# Create database of the existing airports

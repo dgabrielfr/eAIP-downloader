@@ -5,7 +5,7 @@ import re
 import shutil
 import sys
 import tkinter as tk
-import urllib
+import urllib3
 import urllib.request
 from os import listdir
 from string import ascii_uppercase
@@ -14,6 +14,8 @@ from tkinter.filedialog import *
 
 import pandas as pd
 import psycopg2
+
+import database_utils as db_u
 
 
 def searchfile():
@@ -105,6 +107,7 @@ def download(filename):
 
     """
     download_french_metro_charts(filename, "https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/FRANCE/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.LF")
+    download_french_reunion_charts(filename, "https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/RUN/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.")
 
 def download_french_metro_charts(filename, fixed_path):
     """
@@ -129,6 +132,25 @@ def download_french_metro_charts(filename, fixed_path):
                 urllib.request.urlretrieve(full_path, "LF" + c1 + c2 + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf")
             except urllib.error.HTTPError as e:
                 print("LF" + c1 + c2 + " download error: " + str(e))
+
+
+# Download the Reunion French eAIP charts in PDF format
+def download_french_reunion_charts(filename, fixed_path):
+
+
+    # Réunion airport list
+    reunion_airport = ["FMCZ", "FMEE", "FMEP"]
+    for ad in reunion_airport:
+        if os.path.isfile(ad + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf"):
+            print(ad + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf" + " Already exists, skipping!")
+            continue
+        try:
+            full_path = fixed_path + ad + "-fr-FR.pdf"
+            print(full_path)
+            # urllib.request.urlretrieve(full_path, ad + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf")
+        except urllib.error.HTTPError as e:
+            print(ad + " download error: " + str(e))
+
 
 def dl(folder):
     print("The download folder is set to: " + os.path.dirname(sys.argv[0])) # correct!
@@ -158,41 +180,16 @@ def backup_previous_airac(path_to_airac_date):
         os.mkdir(str(previous_AIRAC_name))
         print("Created backup folder")
         #TODO: check if previous AIRAC PDF exists. If it is the case, move then to the backup folder
-        
-# TODO: 
-# Caution to set the correct database name
-# On Windows, default user is "postgres" with the "postgres" database
-def postgresql_connection():
-
-    conn = None
-    try: 
-        conn = psycopg2.connect(
-        host="localhost",
-        database="postgres",
-        user="postgres",
-        password="psql")
-        print('Connecting to PostgreSQL server')
-        cur = conn.cursor()
-        
-        print('PostgreSQL database version:')
-        cur.execute('SELECT version()')
-
-        # display the PostgreSQL database server version
-        db_version = cur.fetchone()
-        print(db_version)
-        
-        # close the communication with the PostgreSQL
-        cur.close()
-
-    except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
-    finally:
-        if conn is not None:
-            conn.close()
-            print('Database connection closed.')
 
 
-postgresql_connection()
+# TODO : 
+# Return fixed part of French Réunion eAIP
+# URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
+def fixed_french_reunion_download_url(filename):
+    return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + latest_valid_AIRAC_date_formated(filename) + "/RUN/AIRAC-" + latest_valid_AIRAC_date(filename) + "/pdf/FR-AD-2.")
+          
+
+db_u.postgresql_connection()
 
 window = tk.Tk()
 window.geometry("500x200")
@@ -230,7 +227,6 @@ label_AIRAC_date.pack()
 
 
 searchfile()
-
 backup_previous_airac(path_to_AIRAC.get())
 
 window.mainloop()
