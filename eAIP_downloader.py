@@ -106,8 +106,10 @@ def download(filename):
           String: fixed part of the French Metropolitan eAIP url download 
 
     """
+ 
     download_french_metro_charts(filename, "https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/FRANCE/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.LF")
     download_french_reunion_charts(filename, "https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + str(latest_valid_AIRAC_date_formated(filename)) + "/RUN/AIRAC-" + str(latest_valid_AIRAC_date(filename)) + "/pdf/FR-AD-2.")
+
 
 def download_french_metro_charts(filename, fixed_path):
     """
@@ -180,12 +182,61 @@ def backup_previous_airac(path_to_airac_date):
         print("Created backup folder")
         #TODO: check if previous AIRAC PDF exists. If it is the case, move then to the backup folder
 
-
-# TODO : 
 # Return fixed part of French Réunion eAIP
 # URL example: https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_16_JUL_2020/RUN/AIRAC-2020-07-16/pdf/FR-AD-2.FMEE-fr-FR.pdf
 def fixed_french_reunion_download_url(filename):
     return("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + latest_valid_AIRAC_date_formated(filename) + "/RUN/AIRAC-" + latest_valid_AIRAC_date(filename) + "/pdf/FR-AD-2.")
+
+'''
+# TODO : replace the functions below by the reading / writing of a PostgreSQL database!
+'''
+# Write airport.txt
+def write_airport_file(folder):
+    if os.path.isdir(folder):
+        print("Folder " + folder + " found!")
+    else:
+        print("Error! Folder " + folder + " NOT found")
+        return(-1)
+    
+    airport_file = open("airport.txt", "wt")
+    files = [f for f in listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+    airport_name = set([file_name[:4] for file_name in files])
+    print(airport_name)
+    for airport in airport_name:
+        airport_file.append(airport)
+    airport_file.close()
+    
+# Read airport.txt
+def read_airport_file(folder):
+    print(os.path.join(folder, "airport.txt"))
+    if os.path.isfile(os.path.join(folder, "airport.txt")):
+        print("File airport.txt found!")
+        os.chdir(folder)
+        airport_in =[]
+        with open("airport.txt") as file:
+            for lines in file:
+                lines = lines.strip() # Don't forget!!
+                airport_in.append(lines)
+        return(airport_in)
+    else:
+        print("File airport.txt not found!")
+        return(-1)
+
+# Download only the airport in airport.txt
+def download_airport_in_file(folder, airport_in, filename):
+
+    eAIP_date_string = latest_valid_AIRAC_date_formated(filename)
+    num_part = re.search("[0-9]{4}", folder)
+    string_airac_date = latest_valid_AIRAC_date(filename)
+
+    for icao in airport_in:
+        if not(os.path.isfile( icao + "-eAIP-" + eAIP_date_string + ".pdf")):
+            try:
+                urllib.request.urlretrieve("https://www.sia.aviation-civile.gouv.fr/dvd/eAIP_" + eAIP_date_string + "/FRANCE/AIRAC-" + string_airac_date + "/pdf/FR-AD-2." + str(icao) + "-fr-FR.pdf", str(icao) + "-eAIP-" + eAIP_date_string + ".pdf")
+            except urllib.error.HTTPError as e:
+                print(icao + " download error: " + str(e))
+        else:
+            print(icao + "-eAIP-" + eAIP_date_string + ".pdf" + " file already exists, skipping!")
           
 
 db_u.postgresql_connection()
