@@ -120,6 +120,8 @@ def download_french_metro_charts(filename, fixed_path):
         fixed_path (string): the fixed part of the download path
     """
 
+    download_airport_in_file(fixed_path, "airport.txt", filename)
+
     # Download the charts in PDF
     for c1 in ascii_uppercase:
         for c2 in ascii_uppercase:
@@ -135,6 +137,7 @@ def download_french_metro_charts(filename, fixed_path):
             except urllib.error.HTTPError as e:
                 print("LF" + c1 + c2 + " download error: " + str(e))
 
+    write_airport_file(fixed_path)
 
 # Download the Reunion French eAIP charts in PDF format
 def download_french_reunion_charts(filename, fixed_path):
@@ -148,6 +151,7 @@ def download_french_reunion_charts(filename, fixed_path):
             continue
         try:
             full_path = fixed_path + ad + "-fr-FR.pdf"
+            print("Test : " + full_path)
             urllib.request.urlretrieve(full_path, ad + "-eAIP-" + latest_valid_AIRAC_name(filename) + ".pdf")
         except urllib.error.HTTPError as e:
             print(ad + " download error: " + str(e))
@@ -206,6 +210,7 @@ def write_airport_file(folder):
         airport_file.append(airport)
     airport_file.close()
     
+# TODO: rewrite the function
 # Read airport.txt
 def read_airport_file(folder):
     print(os.path.join(folder, "airport.txt"))
@@ -222,6 +227,7 @@ def read_airport_file(folder):
         print("File airport.txt not found!")
         return(-1)
 
+# TODO: rewrite the function
 # Download only the airport in airport.txt
 def download_airport_in_file(folder, airport_in, filename):
 
